@@ -1,17 +1,48 @@
-let slideIndex = 0;
-const slides = document.getElementsByClassName('slide');
+const images = document.querySelectorAll('.image-container');
+const modal = document.getElementById('modal');
+const modalImage = document.getElementById('modal-image');
+const modalCaption = document.getElementById('modal-caption');
+const closeBtn = document.getElementsByClassName('close')[0];
 
-function showSlides() {
-    for (let i = 0; i < slides.length; i++) {
-        slides[i].style.display = 'none';
+let currentImageIndex = 0;
+
+images.forEach((image, index) => {
+    image.addEventListener('click', () => {
+        currentImageIndex = index;
+        modal.style.display = 'block';
+        modalImage.src = images[index].querySelector('img').src;
+        modalCaption.innerHTML = `Poem ${index + 1}`;
+        modalCaption.style.display = 'block';
+        document.body.style.overflow = 'hidden'; // Disable scrolling
+    });
+});
+
+closeBtn.addEventListener('click', () => {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Enable scrolling
+});
+
+window.addEventListener('click', (event) => {
+    if (event.target === modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Enable scrolling
     }
-    slideIndex++;
-    if (slideIndex > slides.length) {
-        slideIndex = 1;
+});
+
+window.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto'; // Enable scrolling
     }
-    slides[slideIndex - 1].style.display = 'block';
-    slides[slideIndex - 1].classList.add('fade-in');
-    setTimeout(showSlides, 5000); // Change slide every 5 seconds
+});
+
+function showRandomCaption() {
+    const randomIndex = Math.floor(Math.random() * images.length);
+    modalCaption.innerHTML = `Poem ${randomIndex + 1}`;
 }
 
-showSlides();
+setInterval(() => {
+    currentImageIndex = (currentImageIndex + 1) % images.length;
+    modalImage.src = images[currentImageIndex].querySelector('img').src;
+    showRandomCaption();
+}, 5000);
