@@ -142,6 +142,7 @@ body {
   }
   100% {
     max-width: 50%;
+    max-height: 1280px;
     transform: rotate(0deg);
   }
 }
