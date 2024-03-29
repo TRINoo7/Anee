@@ -1,48 +1,32 @@
-const images = document.querySelectorAll('.image-container');
-const modal = document.getElementById('modal');
-const modalImage = document.getElementById('modal-image');
-const modalCaption = document.getElementById('modal-caption');
-const closeBtn = document.getElementsByClassName('close')[0];
-
-let currentImageIndex = 0;
-
-images.forEach((image, index) => {
-    image.addEventListener('click', () => {
-        currentImageIndex = index;
-        modal.style.display = 'block';
-        modalImage.src = images[index].querySelector('img').src;
-        modalCaption.innerHTML = `Poem ${index + 1}`;
-        modalCaption.style.display = 'block';
-        document.body.style.overflow = 'hidden'; // Disable scrolling
+var gallery = document.getElementById('gallery');
+var getVal = function (elem, style) { return parseInt(window.getComputedStyle(elem).getPropertyValue(style)); };
+var getHeight = function (item) { return item.querySelector('.content').getBoundingClientRect().height; };
+var resizeAll = function () {
+    var altura = getVal(gallery, 'grid-auto-rows');
+    var gap = getVal(gallery, 'grid-row-gap');
+    gallery.querySelectorAll('.gallery-item').forEach(function (item) {
+        var el = item;
+        el.style.gridRowEnd = "span " + Math.ceil((getHeight(item) + gap) / (altura + gap));
+    });
+};
+gallery.querySelectorAll('img').forEach(function (item) {
+    item.classList.add('byebye');
+    if (item.complete) {
+        console.log(item.src);
+    }
+    else {
+        item.addEventListener('load', function () {
+            var altura = getVal(gallery, 'grid-auto-rows');
+            var gap = getVal(gallery, 'grid-row-gap');
+            var gitem = item.parentElement.parentElement;
+            gitem.style.gridRowEnd = "span " + Math.ceil((getHeight(gitem) + gap) / (altura + gap));
+            item.classList.remove('byebye');
+        });
+    }
+});
+window.addEventListener('resize', resizeAll);
+gallery.querySelectorAll('.gallery-item').forEach(function (item) {
+    item.addEventListener('click', function () {        
+        item.classList.toggle('full');        
     });
 });
-
-closeBtn.addEventListener('click', () => {
-    modal.style.display = 'none';
-    document.body.style.overflow = 'auto'; // Enable scrolling
-});
-
-window.addEventListener('click', (event) => {
-    if (event.target === modal) {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Enable scrolling
-    }
-});
-
-window.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-        modal.style.display = 'none';
-        document.body.style.overflow = 'auto'; // Enable scrolling
-    }
-});
-
-function showRandomCaption() {
-    const randomIndex = Math.floor(Math.random() * images.length);
-    modalCaption.innerHTML = `Poem ${randomIndex + 1}`;
-}
-
-setInterval(() => {
-    currentImageIndex = (currentImageIndex + 1) % images.length;
-    modalImage.src = images[currentImageIndex].querySelector('img').src;
-    showRandomCaption();
-}, 5000);
